@@ -22,3 +22,7 @@ Contractor Model: if user role is contractor, Contractor Model will be created
 ```
 
 Note: servicesOffered must be an array of strings pass to req.body. If user will update the servicesOffered or add valud, old servicesOffered data must retrieve and pass again with the new data as an array or string to retain the value.
+
+# Deployment
+
+Ready for deployment
