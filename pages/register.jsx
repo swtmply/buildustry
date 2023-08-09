@@ -74,10 +74,6 @@ export default function Register() {
     mutate(values);
   }
 
-  useEffect(() => {
-    console.log(form.getValues());
-  }, [form]);
-
   return (
     <main className="min-h-screen flex">
       <div className="w-1/2 min-h-full relative">
