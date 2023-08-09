@@ -5,39 +5,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 
-const jobs = [
-  {
-    name: "Website Design",
-    dateFinished: new Date("2023-07-11"),
-    worker: {
-      name: "John Smith",
-      role: "contractor",
-    },
-    service: "Web Design",
-    status: "completed",
-  },
-  {
-    name: "App Development",
-    dateFinished: new Date("2023-07-12"),
-    worker: {
-      name: "Jane Smith",
-      role: "contractor",
-    },
-    service: "App Development",
-    status: "pending",
-  },
-  {
-    name: "Graphic Design",
-    dateFinished: new Date("2023-07-13"),
-    worker: {
-      name: "John Doe",
-      role: "laborer",
-    },
-    service: "Graphic Design",
-    status: "completed",
-  },
-];
-
 const History = () => {
   const { data: user, isLoading } = useQuery(["user"], async () => {
     const response = await axios.get("/api/auth/me");
@@ -46,7 +13,7 @@ const History = () => {
   });
 
   const { data: projects, isLoading: projectsLoading } = useQuery(
-    ["projects", user.id],
+    ["projects", user?.id],
     async () => {
       const response = await axios.get("/api/projects");
       return response.data;
