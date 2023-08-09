@@ -25,4 +25,4 @@ Note: servicesOffered must be an array of strings pass to req.body. If user will
 
 # Deployment
 
-Ready for deployment
+Ready for deployment to production
