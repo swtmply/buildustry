@@ -3,8 +3,9 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = "file:./db/dev.db"
+  provider     = "mysql"
+  url          = env("DATABASE_URL")
+  relationMode = "prisma"
 }
 
 model User {
@@ -44,6 +45,8 @@ model ServiceOffered {
   service      String?
   contractorId String?
   contractor   Contractor? @relation(fields: [contractorId], references: [id], onDelete: Cascade)
+
+  @@index([contractorId])
 }
 
 model Team {
@@ -59,6 +62,9 @@ model Worker {
   workerId String
   worker   User   @relation(fields: [workerId], references: [id], onDelete: Cascade)
   team     Team   @relation(fields: [teamId], references: [id], onDelete: Cascade)
+
+  @@index([workerId])
+  @@index([teamId])
 }
 
 model Project {
@@ -73,6 +79,9 @@ model Project {
   estimationCost Int     @default(0)
   worker         User    @relation("Worker", fields: [workerId], references: [id], onDelete: Cascade)
   client         User    @relation("Client", fields: [clientId], references: [id], onDelete: Cascade)
+
+  @@index([workerId])
+  @@index([clientId])
 }
 
 model Notification {
@@ -83,6 +92,8 @@ model Notification {
   isRead     Boolean  @default(false)
   userId     String
   user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
 
 model Portfolio {
@@ -98,6 +109,8 @@ model CompletedProject {
   portfolioId String
   portfolio   Portfolio @relation(fields: [portfolioId], references: [id], onDelete: Cascade)
   images      Image[]
+
+  @@index([portfolioId])
 }
 
 model Image {
@@ -105,6 +118,8 @@ model Image {
   url       String?
   projectId Int
   project   CompletedProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
 }
 
 model Message {
@@ -115,4 +130,7 @@ model Message {
   receiverId String
   receiver   User     @relation("Receiver", fields: [receiverId], references: [id], onDelete: Cascade)
   sender     User     @relation("Sender", fields: [senderId], references: [id], onDelete: Cascade)
+
+  @@index([receiverId])
+  @@index([senderId])
 }
