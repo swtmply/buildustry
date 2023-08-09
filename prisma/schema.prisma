@@ -1,0 +1,118 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./db/dev.db"
+}
+
+model User {
+  id               String         @id @default(cuid())
+  name             String
+  username         String         @unique
+  password         String         @default("password-excluded")
+  email            String         @unique
+  contactNumber    String
+  role             String         @default("client")
+  rating           Float          @default(0)
+  ratingCount      Int            @default(0)
+  portfolioId      String?        @unique
+  laborType        String?
+  contractor       Contractor?    @relation("UserContractor")
+  receivedMessages Message[]      @relation("Receiver")
+  sentMessages     Message[]      @relation("Sender")
+  notifications    Notification[]
+  worker           Project[]      @relation("Worker")
+  client           Project[]      @relation("Client")
+  ledTeam          Team?          @relation("TeamLeader")
+  portfolio        Portfolio?     @relation("userPortfolio", fields: [portfolioId], references: [id], onDelete: Cascade)
+  workers          Worker[]
+}
+
+model Contractor {
+  id              String           @id @default(cuid())
+  location        String?
+  description     String?
+  userId          String           @unique
+  user            User             @relation("UserContractor", fields: [userId], references: [id], onDelete: Cascade)
+  servicesOffered ServiceOffered[]
+}
+
+model ServiceOffered {
+  id           String      @id @default(cuid())
+  service      String?
+  contractorId String?
+  contractor   Contractor? @relation(fields: [contractorId], references: [id], onDelete: Cascade)
+}
+
+model Team {
+  id           String   @id @default(cuid())
+  teamLeaderId String?  @unique
+  teamLeader   User?    @relation("TeamLeader", fields: [teamLeaderId], references: [id], onDelete: Cascade)
+  workers      Worker[]
+}
+
+model Worker {
+  id       String @id @default(cuid())
+  teamId   String
+  workerId String
+  worker   User   @relation(fields: [workerId], references: [id], onDelete: Cascade)
+  team     Team   @relation(fields: [teamId], references: [id], onDelete: Cascade)
+}
+
+model Project {
+  id             String  @id @default(cuid())
+  name           String
+  description    String
+  typeOfService  String?
+  status         String  @default("pending")
+  clientId       String
+  workerId       String
+  isRated        Boolean @default(false)
+  estimationCost Int     @default(0)
+  worker         User    @relation("Worker", fields: [workerId], references: [id], onDelete: Cascade)
+  client         User    @relation("Client", fields: [clientId], references: [id], onDelete: Cascade)
+}
+
+model Notification {
+  id         String   @id @default(cuid())
+  title      String
+  content    String
+  created_at DateTime @default(now())
+  isRead     Boolean  @default(false)
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Portfolio {
+  id       String             @id @default(cuid())
+  userId   String?
+  projects CompletedProject[]
+  user     User?              @relation("userPortfolio")
+}
+
+model CompletedProject {
+  id          Int       @id @default(autoincrement())
+  name        String
+  portfolioId String
+  portfolio   Portfolio @relation(fields: [portfolioId], references: [id], onDelete: Cascade)
+  images      Image[]
+}
+
+model Image {
+  id        Int              @id @default(autoincrement())
+  url       String?
+  projectId Int
+  project   CompletedProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
+}
+
+model Message {
+  id         Int      @id @default(autoincrement())
+  content    String
+  createdAt  DateTime @default(now())
+  senderId   String
+  receiverId String
+  receiver   User     @relation("Receiver", fields: [receiverId], references: [id], onDelete: Cascade)
+  sender     User     @relation("Sender", fields: [senderId], references: [id], onDelete: Cascade)
+}
